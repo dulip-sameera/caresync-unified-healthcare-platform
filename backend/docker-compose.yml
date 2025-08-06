@@ -1,0 +1,22 @@
+services:
+  patient_service_db:
+    container_name: patient-service-db
+    image: postgres
+    environment:
+      POSTGRES_USER: psql
+      POSTGRES_PASSWORD: psql
+      PG_DATA: /data/postgres
+    volumes:
+      - patient_service_postgres:/data/postgres
+    ports:
+      - "5000:5432"
+    networks:
+      internal:
+    restart: unless-stopped
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  patient_service_postgres:
