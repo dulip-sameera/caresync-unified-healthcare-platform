@@ -1,5 +1,6 @@
 package dev.dulipsameera.patientservice.entity;
 
+import dev.dulipsameera.patientservice.enums.PatientStatusEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +19,8 @@ public class PatientStatusEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    @Column(columnDefinition = "VARCHAR(50)",nullable = false)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(50)", name = "name", nullable = false)
+    private PatientStatusEnum name;
 
 }
