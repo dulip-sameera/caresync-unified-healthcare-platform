@@ -33,4 +33,8 @@ public class PatientEntity {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    @ManyToOne
+    @JoinColumn(name = "status_id")
+    private PatientStatusEntity status;
+
 }

@@ -1,5 +1,6 @@
 package dev.dulipsameera.patientservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import dev.dulipsameera.patientservice.enums.PatientStatusEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -23,4 +25,7 @@ public class PatientStatusEntity {
     @Column(columnDefinition = "VARCHAR(50)", name = "name", nullable = false)
     private PatientStatusEnum name;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "status")
+    private List<PatientEntity> patients;
 }
