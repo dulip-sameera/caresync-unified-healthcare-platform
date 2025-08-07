@@ -18,12 +18,12 @@ public class PatientController {
     }
 
     @GetMapping
-    public List<PatientEntity> getAllPatients() {
+    public List<PatientDto> getAllPatients() {
       return patientService.getAllPatients();
     }
 
     @PostMapping
-    public PatientEntity savePatient(@RequestBody PatientDto patientDto) {
+    public PatientDto savePatient(@RequestBody PatientDto patientDto) {
       return patientService.savePatient(patientDto);
     }
 

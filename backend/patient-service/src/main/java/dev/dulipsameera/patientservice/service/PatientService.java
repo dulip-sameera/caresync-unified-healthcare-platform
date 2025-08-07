@@ -8,6 +8,6 @@ import java.util.List;
 
 @Service
 public interface PatientService {
-    public List<PatientEntity> getAllPatients();
-    public PatientEntity savePatient(PatientDto patientDto);
+    public List<PatientDto> getAllPatients();
+    public PatientDto savePatient(PatientDto patientDto);
 }
