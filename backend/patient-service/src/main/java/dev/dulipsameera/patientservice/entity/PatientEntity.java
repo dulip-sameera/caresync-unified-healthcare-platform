@@ -1,6 +1,7 @@
 package dev.dulipsameera.patientservice.entity;
 
 import dev.dulipsameera.patientservice.entity.embeddable.Address;
+import dev.dulipsameera.patientservice.enums.PatientStatusEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,8 +34,5 @@ public class PatientEntity {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "status_id")
-    private PatientStatusEntity status;
 
 }

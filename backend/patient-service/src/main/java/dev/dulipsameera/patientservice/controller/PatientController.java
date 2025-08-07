@@ -1,6 +1,8 @@
 package dev.dulipsameera.patientservice.controller;
 
+import dev.dulipsameera.patientservice.dto.PatientDto;
 import dev.dulipsameera.patientservice.entity.PatientEntity;
+import dev.dulipsameera.patientservice.service.PatientService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -9,14 +11,20 @@ import java.util.List;
 @RequestMapping("/patients")
 public class PatientController {
 
+    private PatientService patientService;
+
+    public PatientController(PatientService patientService) {
+        this.patientService = patientService;
+    }
+
     @GetMapping
     public List<PatientEntity> getAllPatients() {
-      return null;
+      return patientService.getAllPatients();
     }
 
     @PostMapping
-    public PatientEntity savePatient(@RequestBody PatientEntity patientEntity) {
-      return null;
+    public PatientEntity savePatient(@RequestBody PatientDto patientDto) {
+      return patientService.savePatient(patientDto);
     }
 
 }
