@@ -1,8 +1,6 @@
-package dev.dulipsameera.patientservice.entity;
+package dev.dulipsameera.patientservice.dto;
 
 import dev.dulipsameera.patientservice.entity.embeddable.Address;
-import dev.dulipsameera.patientservice.enums.PatientStatusEnum;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,14 +11,10 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-@Entity
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "patient")
-public class PatientEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+@AllArgsConstructor
+public class PatientDto {
     private UUID id;
     private String shareId;
     private String firstName;
@@ -29,12 +23,9 @@ public class PatientEntity {
     private String nic;
     private String contactNo;
     private LocalDate dateOfBirth;
-    @Embedded
     private Address address;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(20)", name = "status",  nullable = false)
-    private PatientStatusEnum status;
+    private String status;
 
 }
