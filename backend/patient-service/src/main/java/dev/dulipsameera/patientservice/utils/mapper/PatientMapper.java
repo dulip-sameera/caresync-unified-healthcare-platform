@@ -23,7 +23,7 @@ public class PatientMapper {
         patientDto.setCreatedAt(patientEntity.getCreatedAt());
         patientDto.setUpdatedAt(patientEntity.getUpdatedAt());
 
-        String status = patientEntity.getStatusId().equals(PatientStatusEnum.ACTIVE.getId()) ?
+        String status = patientEntity.getStatusId().getId().equals(PatientStatusEnum.ACTIVE.getId()) ?
                 PatientStatusEnum.ACTIVE.getName() : PatientStatusEnum.DELETED.getName();
         patientDto.setStatus(status);
         return patientDto;
