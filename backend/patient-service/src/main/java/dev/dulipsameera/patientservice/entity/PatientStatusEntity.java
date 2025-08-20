@@ -3,6 +3,7 @@ package dev.dulipsameera.patientservice.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,11 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "patient_status")
 public class PatientStatusEntity {
+
+    public PatientStatusEntity(Integer id) {
+        this.id = id;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

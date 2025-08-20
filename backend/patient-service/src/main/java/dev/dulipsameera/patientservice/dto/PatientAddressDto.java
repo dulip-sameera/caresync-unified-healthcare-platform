@@ -1,27 +1,17 @@
-package dev.dulipsameera.patientservice.entity.embedded;
+package dev.dulipsameera.patientservice.dto;
 
-import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.antlr.v4.runtime.misc.NotNull;
 
 @Data
-@Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
-public class PatientAddress {
-
-    @NotNull
+public class PatientAddressDto {
     private String street1;
     private String street2;
-    @NotNull
     private String city;
-    @NotNull
     private String district;
-    @NotNull
     private String province;
-    @NotNull
     private String zipCode;
 }
-
