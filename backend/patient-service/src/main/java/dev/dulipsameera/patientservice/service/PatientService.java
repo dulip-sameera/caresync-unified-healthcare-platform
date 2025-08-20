@@ -1,11 +1,11 @@
 package dev.dulipsameera.patientservice.service;
 
 import dev.dulipsameera.patientservice.dto.PatientDto;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @Service
 public interface PatientService {
-    List<PatientDto> getAllPatients(int page, int pageSize);
+    Slice<PatientDto> getAllPatients(int page, int pageSize);
 }

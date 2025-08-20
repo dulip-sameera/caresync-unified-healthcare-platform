@@ -2,6 +2,7 @@ package dev.dulipsameera.patientservice.controller;
 
 import dev.dulipsameera.patientservice.dto.PatientDto;
 import dev.dulipsameera.patientservice.service.PatientService;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +23,7 @@ public class PatientController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PatientDto>> getAllPatients(
+    public ResponseEntity<Slice<PatientDto>> getAllPatients(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int pageSize) {
         return new ResponseEntity<>(patientService.getAllPatients(page, pageSize), HttpStatus.OK);
