@@ -5,6 +5,7 @@ import dev.dulipsameera.patientservice.repository.PatientRepository;
 import dev.dulipsameera.patientservice.repository.PatientStatusRepository;
 import dev.dulipsameera.patientservice.service.PatientService;
 import dev.dulipsameera.patientservice.utils.mapper.PatientMapper;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public List<PatientDto> getAllPatients() {
-        return patientRepository.findAll().stream().map(PatientMapper::toDto).toList();
+    public List<PatientDto> getAllPatients(int page, int pageSize) {
+        return patientRepository.findAll(PageRequest.of(page, pageSize)).stream().map(PatientMapper::toDto).toList();
     }
 }

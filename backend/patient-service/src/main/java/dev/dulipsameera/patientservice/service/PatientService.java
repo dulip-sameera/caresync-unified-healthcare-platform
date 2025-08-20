@@ -7,5 +7,5 @@ import java.util.List;
 
 @Service
 public interface PatientService {
-    List<PatientDto> getAllPatients();
+    List<PatientDto> getAllPatients(int page, int pageSize);
 }
