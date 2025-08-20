@@ -12,6 +12,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PatientServiceImpl implements PatientService {
@@ -29,6 +30,15 @@ public class PatientServiceImpl implements PatientService {
         Pageable pageable = PageRequest.of(page, pageSize);
         Slice<PatientEntity> patientSlice = patientRepository.findAll(pageable);
         return patientSlice.map(PatientMapper::toDto);
+    }
+
+    @Override
+    public PatientDto getPatientById(UUID id) {
+        PatientEntity patientEntity = patientRepository.findById(id).orElse(null);
+        if (patientEntity == null) {
+            return null;
+        }
+        return PatientMapper.toDto(patientEntity);
     }
 
 }
