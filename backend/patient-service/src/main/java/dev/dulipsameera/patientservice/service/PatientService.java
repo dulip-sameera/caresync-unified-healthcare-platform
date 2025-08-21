@@ -14,4 +14,5 @@ public interface PatientService {
     PatientDto getPatientByShareId(String shareId);
     PatientDto getPatientByContact(String contact);
     PatientDto getPatientByNic(String nic);
+    PatientDto getPatientByEmail(String email);
 }
