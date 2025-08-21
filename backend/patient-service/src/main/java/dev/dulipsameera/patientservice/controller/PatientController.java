@@ -40,4 +40,9 @@ public class PatientController {
     public ResponseEntity<PatientDto> getPatientByContact(@PathVariable String contact){
         return new ResponseEntity<>(patientService.getPatientByContact(contact), HttpStatus.OK);
     }
+
+    @GetMapping("/nic/{nic}")
+    public ResponseEntity<PatientDto> getPatientByNic(@PathVariable String nic){
+        return new ResponseEntity<>(patientService.getPatientByNic(nic), HttpStatus.OK);
+    }
 }

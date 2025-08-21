@@ -61,4 +61,12 @@ public class PatientServiceImpl implements PatientService {
         return patientMapper.toDto(patientEntity);
     }
 
+    @Override
+    public PatientDto getPatientByNic(String nic) {
+        PatientEntity patientEntity = patientRepository
+                .findByNic(nic)
+                .orElseThrow(() -> new PatientNotFoundException("Patient with nic " + nic + " not found."));
+        return patientMapper.toDto(patientEntity);
+    }
+
 }
