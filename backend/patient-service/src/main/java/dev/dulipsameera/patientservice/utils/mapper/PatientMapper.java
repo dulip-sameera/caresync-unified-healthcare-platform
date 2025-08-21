@@ -4,10 +4,18 @@ import dev.dulipsameera.patientservice.dto.PatientDto;
 import dev.dulipsameera.patientservice.entity.PatientEntity;
 import dev.dulipsameera.patientservice.entity.PatientStatusEntity;
 import dev.dulipsameera.patientservice.enums.PatientStatusEnum;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PatientMapper {
 
-    public static PatientDto toDto(PatientEntity patientEntity) {
+    private final PatientAddressMapper patientAddressMapper;
+
+    public PatientMapper(PatientAddressMapper patientAddressMapper) {
+        this.patientAddressMapper = patientAddressMapper;
+    }
+
+    public PatientDto toDto(PatientEntity patientEntity) {
         PatientDto patientDto = new PatientDto();
 
         patientDto.setId(patientEntity.getId());
@@ -18,7 +26,7 @@ public class PatientMapper {
         patientDto.setEmail(patientEntity.getEmail());
         patientDto.setNic(patientEntity.getNic());
         patientDto.setContactNo(patientEntity.getContactNo());
-        patientDto.setAddress(PatientAddressMapper.toDto(patientEntity.getAddress()));
+        patientDto.setAddress(patientAddressMapper.toDto(patientEntity.getAddress()));
         patientDto.setUserId(patientEntity.getUserId());
         patientDto.setCreatedAt(patientEntity.getCreatedAt());
         patientDto.setUpdatedAt(patientEntity.getUpdatedAt());
@@ -30,7 +38,7 @@ public class PatientMapper {
     }
 
 
-    public static PatientEntity toEntity(PatientDto patientDto) {
+    public PatientEntity toEntity(PatientDto patientDto) {
         PatientEntity patientEntity = new PatientEntity();
 
         patientEntity.setId(patientDto.getId());
@@ -41,7 +49,7 @@ public class PatientMapper {
         patientEntity.setEmail(patientDto.getEmail());
         patientEntity.setNic(patientDto.getNic());
         patientEntity.setContactNo(patientDto.getContactNo());
-        patientEntity.setAddress(PatientAddressMapper.toEntity(patientDto.getAddress()));
+        patientEntity.setAddress(patientAddressMapper.toEntity(patientDto.getAddress()));
         patientEntity.setUserId(patientDto.getUserId());
         patientEntity.setCreatedAt(patientDto.getCreatedAt());
         patientEntity.setUpdatedAt(patientDto.getUpdatedAt());
