@@ -2,7 +2,10 @@ package dev.dulipsameera.patientservice.service.impl;
 
 import dev.dulipsameera.patientservice.dto.PatientDto;
 import dev.dulipsameera.patientservice.entity.PatientEntity;
+import dev.dulipsameera.patientservice.entity.PatientStatusEntity;
+import dev.dulipsameera.patientservice.enums.PatientStatusEnum;
 import dev.dulipsameera.patientservice.exception.custom.PatientNotFoundException;
+import dev.dulipsameera.patientservice.exception.custom.PatientStatusNotFound;
 import dev.dulipsameera.patientservice.repository.PatientRepository;
 import dev.dulipsameera.patientservice.repository.PatientStatusRepository;
 import dev.dulipsameera.patientservice.service.PatientService;
@@ -11,7 +14,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -75,6 +80,32 @@ public class PatientServiceImpl implements PatientService {
                 .findByEmail(email)
                 .orElseThrow(() -> new PatientNotFoundException("Patient with email " + email + " not found."));
         return patientMapper.toDto(patientEntity);
+    }
+
+    @Override
+    @Transactional
+    public void deletePatientById(UUID id) {
+        // check if the id is null
+        if (id == null) {
+            throw new IllegalArgumentException("Patient ID cannot be null");
+        }
+
+        // get the patient entity by id and throw exception if not found
+        PatientEntity patientEntity = patientRepository
+                .findById(id)
+                .orElseThrow(() -> new PatientNotFoundException("Patient with ID " + id + " not found."));
+        // check the current status of the patient
+        if (PatientStatusEnum.DELETED.getId().equals(patientEntity.getStatusId().getId())) {
+            throw new PatientNotFoundException("Patient with ID " + id + " is already deleted.");
+        }
+        // mark the patient as deleted
+        Optional<PatientStatusEntity> patientStatusEntity = patientStatusRepository
+                .findById(PatientStatusEnum.DELETED.getId());
+        if (patientStatusEntity.isEmpty()) {
+            throw new PatientStatusNotFound("Patient status with ID " + PatientStatusEnum.DELETED.getId() + " not found.");
+        }
+        patientEntity.setStatusId(patientStatusEntity.get());
+        patientRepository.save(patientEntity);
     }
 
 }

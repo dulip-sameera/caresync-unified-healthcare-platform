@@ -50,4 +50,10 @@ public class PatientController {
     public ResponseEntity<PatientDto> getPatientByEmail(@PathVariable String email){
         return new ResponseEntity<>(patientService.getPatientByEmail(email), HttpStatus.OK);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePatientById(UUID id) {
+        patientService.deletePatientById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
