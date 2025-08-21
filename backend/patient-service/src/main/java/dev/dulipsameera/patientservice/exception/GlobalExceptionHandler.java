@@ -1,5 +1,6 @@
 package dev.dulipsameera.patientservice.exception;
 
+import dev.dulipsameera.patientservice.exception.custom.PatientDtoValidationException;
 import dev.dulipsameera.patientservice.exception.custom.PatientNotFoundException;
 import dev.dulipsameera.patientservice.exception.custom.PatientStatusNotFound;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,17 @@ public class GlobalExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
         problemDetail.setTitle("Invalid Request");
         problemDetail.setProperty("timestamp", Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(PatientDtoValidationException.class)
+    public ProblemDetail handlePatientDtoValidation(PatientDtoValidationException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                "Validation failed for PatientDto"
+        );
+        problemDetail.setTitle("Invalid Patient Data");
+        problemDetail.setProperty("errors", ex.getErrors());
         return problemDetail;
     }
 }

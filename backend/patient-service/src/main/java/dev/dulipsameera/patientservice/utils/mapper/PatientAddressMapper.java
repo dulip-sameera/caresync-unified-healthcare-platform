@@ -13,6 +13,7 @@ public class PatientAddressMapper {
         patientAddressDto.setStreet2(patientAddress.getStreet2());
         patientAddressDto.setCity(patientAddress.getCity());
         patientAddressDto.setDistrict(patientAddress.getDistrict());
+        patientAddressDto.setProvince(patientAddress.getProvince());
         patientAddressDto.setZipCode(patientAddress.getZipCode());
         return patientAddressDto;
     }
@@ -23,6 +24,7 @@ public class PatientAddressMapper {
         patientAddress.setStreet2(patientAddressDto.getStreet2());
         patientAddress.setCity(patientAddressDto.getCity());
         patientAddress.setDistrict(patientAddressDto.getDistrict());
+        patientAddress.setProvince(patientAddressDto.getProvince());
         patientAddress.setZipCode(patientAddressDto.getZipCode());
         return patientAddress;
     }

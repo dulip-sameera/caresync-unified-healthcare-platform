@@ -56,4 +56,9 @@ public class PatientController {
         patientService.deletePatientById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @PostMapping
+    public ResponseEntity<PatientDto> createPatient(@RequestBody PatientDto patientDto) {
+        return new ResponseEntity<>(patientService.createPatient(patientDto), HttpStatus.CREATED);
+    }
 }

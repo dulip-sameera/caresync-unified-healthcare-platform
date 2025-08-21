@@ -54,12 +54,15 @@ public class PatientMapper {
         patientEntity.setCreatedAt(patientDto.getCreatedAt());
         patientEntity.setUpdatedAt(patientDto.getUpdatedAt());
 
-        PatientStatusEntity status = patientDto.getStatus().equals(PatientStatusEnum.ACTIVE.getName())
-                ? new PatientStatusEntity(PatientStatusEnum.ACTIVE.getId())
-                : new PatientStatusEntity(PatientStatusEnum.DELETED.getId());
+        if (patientDto.getStatus() == null) {
+            patientEntity.setStatusId(null);
+        } else {
+            PatientStatusEntity status = patientDto.getStatus().equals(PatientStatusEnum.ACTIVE.getName())
+                    ? new PatientStatusEntity(PatientStatusEnum.ACTIVE.getId())
+                    : new PatientStatusEntity(PatientStatusEnum.DELETED.getId());
 
-        patientEntity.setStatusId(status);
-
+            patientEntity.setStatusId(status);
+        }
         return patientEntity;
     }
 }
