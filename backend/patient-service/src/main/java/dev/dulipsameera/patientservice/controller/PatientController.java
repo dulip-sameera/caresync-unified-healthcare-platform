@@ -52,7 +52,7 @@ public class PatientController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePatientById(UUID id) {
+    public ResponseEntity<Void> deletePatientById(@PathVariable UUID id) {
         patientService.deletePatientById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
