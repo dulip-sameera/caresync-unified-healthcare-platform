@@ -12,4 +12,5 @@ public interface PatientService {
     Slice<PatientDto> getAllPatients(int page, int pageSize);
     PatientDto getPatientById(UUID id);
     PatientDto getPatientByShareId(String shareId);
+    PatientDto getPatientByContact(String contact);
 }

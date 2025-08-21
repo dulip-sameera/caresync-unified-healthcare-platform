@@ -53,4 +53,12 @@ public class PatientServiceImpl implements PatientService {
         return patientMapper.toDto(patientEntity);
     }
 
+    @Override
+    public PatientDto getPatientByContact(String contact) {
+        PatientEntity patientEntity = patientRepository
+                .findByContactNo(contact)
+                .orElseThrow(() -> new PatientNotFoundException("Patient with contact " + contact + " not found."));
+        return patientMapper.toDto(patientEntity);
+    }
+
 }

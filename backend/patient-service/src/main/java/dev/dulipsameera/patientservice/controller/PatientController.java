@@ -35,4 +35,9 @@ public class PatientController {
     public ResponseEntity<PatientDto> getPatientByShareId(@PathVariable String shareId) {
         return new ResponseEntity<>(patientService.getPatientByShareId(shareId), HttpStatus.OK);
     }
+
+    @GetMapping("/contact/{contact}")
+    public ResponseEntity<PatientDto> getPatientByContact(@PathVariable String contact){
+        return new ResponseEntity<>(patientService.getPatientByContact(contact), HttpStatus.OK);
+    }
 }
