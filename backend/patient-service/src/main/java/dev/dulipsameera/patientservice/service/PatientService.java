@@ -11,4 +11,5 @@ import java.util.UUID;
 public interface PatientService {
     Slice<PatientDto> getAllPatients(int page, int pageSize);
     PatientDto getPatientById(UUID id);
+    PatientDto getPatientByShareId(String shareId);
 }

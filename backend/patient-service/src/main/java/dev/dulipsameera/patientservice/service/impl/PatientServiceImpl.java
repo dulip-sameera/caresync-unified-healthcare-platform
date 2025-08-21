@@ -17,9 +17,9 @@ import java.util.UUID;
 @Service
 public class PatientServiceImpl implements PatientService {
 
-    private PatientRepository patientRepository;
-    private PatientStatusRepository patientStatusRepository;
-    private PatientMapper patientMapper;
+    private final PatientRepository patientRepository;
+    private final PatientStatusRepository patientStatusRepository;
+    private final PatientMapper patientMapper;
 
     public PatientServiceImpl(
             PatientRepository patientRepository,
@@ -34,7 +34,7 @@ public class PatientServiceImpl implements PatientService {
     public Slice<PatientDto> getAllPatients(int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         Slice<PatientEntity> patientSlice = patientRepository.findAll(pageable);
-        return patientSlice.map((patient) -> patientMapper.toDto(patient));
+        return patientSlice.map(patientMapper::toDto);
     }
 
     @Override
@@ -42,6 +42,14 @@ public class PatientServiceImpl implements PatientService {
         PatientEntity patientEntity = patientRepository
                 .findById(id)
                 .orElseThrow(() -> new PatientNotFoundException("Patient with ID " + id + " not found."));
+        return patientMapper.toDto(patientEntity);
+    }
+
+    @Override
+    public PatientDto getPatientByShareId(String shareId) {
+        PatientEntity patientEntity = patientRepository
+                .findByShareId(shareId)
+                .orElseThrow(() -> new PatientNotFoundException("Patient with shareId " + shareId + " not found."));
         return patientMapper.toDto(patientEntity);
     }
 

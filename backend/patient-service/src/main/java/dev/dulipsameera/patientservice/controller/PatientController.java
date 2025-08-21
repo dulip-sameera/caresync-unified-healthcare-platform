@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -30,5 +29,10 @@ public class PatientController {
     @GetMapping("/{id}")
     public ResponseEntity<PatientDto> getPatientById(@PathVariable UUID id) {
         return new ResponseEntity<>(patientService.getPatientById(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/shareId/{shareId}")
+    public ResponseEntity<PatientDto> getPatientByShareId(@PathVariable String shareId) {
+        return new ResponseEntity<>(patientService.getPatientByShareId(shareId), HttpStatus.OK);
     }
 }
