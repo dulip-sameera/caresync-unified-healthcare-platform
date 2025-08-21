@@ -1,14 +1,18 @@
 package dev.dulipsameera.patientservice.paitent;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.any;
 
 import dev.dulipsameera.patientservice.dto.PatientDto;
 import dev.dulipsameera.patientservice.entity.PatientEntity;
 import dev.dulipsameera.patientservice.entity.PatientStatusEntity;
 import dev.dulipsameera.patientservice.entity.embedded.PatientAddress;
+import dev.dulipsameera.patientservice.exception.custom.PatientNotFoundException;
 import dev.dulipsameera.patientservice.repository.PatientRepository;
 import dev.dulipsameera.patientservice.service.impl.PatientServiceImpl;
 import dev.dulipsameera.patientservice.utils.mapper.PatientMapper;
@@ -82,5 +86,16 @@ public class PatientServiceTest {
         assertEquals(patientDto, result);
         verify(patientRepository, times(1)).findById(patientId);
         verify(patientMapper, times(1)).toDto(patientEntity);
+    }
+
+    @Test
+    void getPatientByIdShouldThrowExceptionWhenPatientDoesNotExist() {
+        // Arrange
+        when(patientRepository.findById(patientId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(PatientNotFoundException.class, () -> patientService.getPatientById(patientId));
+        verify(patientRepository, times(1)).findById(patientId);
+        verify(patientMapper, never()).toDto(any());
     }
 }
