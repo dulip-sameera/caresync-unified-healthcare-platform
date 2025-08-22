@@ -67,5 +67,7 @@ public class GlobalExceptionHandler {
                 exception.getMessage()
         );
         problemDetail.setTitle("Unexpected Error");
+        problemDetail.setProperty("timestamp", Instant.now());
+        return problemDetail;
     }
 }
