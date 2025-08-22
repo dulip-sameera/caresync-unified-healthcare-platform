@@ -1,5 +1,6 @@
 package dev.dulipsameera.patientservice.exception;
 
+import dev.dulipsameera.patientservice.exception.custom.PatientCreationException;
 import dev.dulipsameera.patientservice.exception.custom.PatientDtoValidationException;
 import dev.dulipsameera.patientservice.exception.custom.PatientNotFoundException;
 import dev.dulipsameera.patientservice.exception.custom.PatientStatusNotFound;
@@ -38,13 +39,33 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(PatientDtoValidationException.class)
-    public ProblemDetail handlePatientDtoValidation(PatientDtoValidationException ex) {
+    public ProblemDetail handlePatientDtoValidation(PatientDtoValidationException exception) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.BAD_REQUEST,
                 "Validation failed for PatientDto"
         );
         problemDetail.setTitle("Invalid Patient Data");
-        problemDetail.setProperty("errors", ex.getErrors());
+        problemDetail.setProperty("errors", exception.getErrors());
         return problemDetail;
+    }
+
+    @ExceptionHandler(PatientCreationException.class)
+    public ProblemDetail handlePatientCreationException(PatientCreationException exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                exception.getMessage()
+        );
+        problemDetail.setTitle("Patient Creation Failed");
+        problemDetail.setProperty("timestamp", Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail handleGeneralException(Exception exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                exception.getMessage()
+        );
+        problemDetail.setTitle("Unexpected Error");
     }
 }

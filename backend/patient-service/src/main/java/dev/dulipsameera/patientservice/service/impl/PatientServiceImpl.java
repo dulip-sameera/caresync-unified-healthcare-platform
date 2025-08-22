@@ -4,6 +4,8 @@ import dev.dulipsameera.patientservice.dto.PatientDto;
 import dev.dulipsameera.patientservice.entity.PatientEntity;
 import dev.dulipsameera.patientservice.entity.PatientStatusEntity;
 import dev.dulipsameera.patientservice.enums.PatientStatusEnum;
+import dev.dulipsameera.patientservice.exception.custom.PatientCreationException;
+import dev.dulipsameera.patientservice.exception.custom.PatientDtoValidationException;
 import dev.dulipsameera.patientservice.exception.custom.PatientNotFoundException;
 import dev.dulipsameera.patientservice.exception.custom.PatientStatusNotFound;
 import dev.dulipsameera.patientservice.repository.PatientRepository;
@@ -12,6 +14,7 @@ import dev.dulipsameera.patientservice.service.PatientService;
 import dev.dulipsameera.patientservice.utils.generator.PatientShareIdGenerator;
 import dev.dulipsameera.patientservice.utils.mapper.PatientMapper;
 import dev.dulipsameera.patientservice.utils.validator.PatientDtoValidator;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -120,23 +123,31 @@ public class PatientServiceImpl implements PatientService {
     @Override
     @Transactional
     public PatientDto createPatient(PatientDto patientDto) {
-        // validate the values of the patient DTO
-        patientDtoValidator.validate(patientDto);
-        // generate the shareid
-        String shareId = patientShareIdGenerator.generateShareId();
-        // create the patient entity
-        PatientEntity patientEntity = patientMapper.toEntity(patientDto);
-        patientEntity.setShareId(shareId);
-        patientEntity.setCreatedAt(LocalDateTime.now());
-        Optional<PatientStatusEntity> activeStatus = patientStatusRepository.findById(PatientStatusEnum.ACTIVE.getId());
-        if (activeStatus.isEmpty()) {
-            throw new PatientStatusNotFound("Patient status with ID " + PatientStatusEnum.ACTIVE.getId() + " not found.");
+        try {
+            // validate the values of the patient DTO
+            patientDtoValidator.validate(patientDto);
+            // generate the shareid
+            String shareId = patientShareIdGenerator.generateShareId();
+            // create the patient entity
+            PatientEntity patientEntity = patientMapper.toEntity(patientDto);
+            patientEntity.setShareId(shareId);
+            patientEntity.setCreatedAt(LocalDateTime.now());
+            Optional<PatientStatusEntity> activeStatus = patientStatusRepository.findById(PatientStatusEnum.ACTIVE.getId());
+            if (activeStatus.isEmpty()) {
+                throw new PatientStatusNotFound("Patient status with ID " + PatientStatusEnum.ACTIVE.getId() + " not found.");
+            }
+            patientEntity.setStatusId(activeStatus.get());
+            // save the patient entity
+            // map the patient entity to the patient DTO
+            // return the patient DTO
+            return patientMapper.toDto(patientRepository.save(patientEntity));
+        } catch (PatientDtoValidationException | PatientStatusNotFound ex) {
+            throw ex;
+        } catch (DataIntegrityViolationException ex) {
+            throw new PatientCreationException("Duplicate or invalid patient data: " + ex.getMostSpecificCause().getMessage(), ex);
+        } catch (Exception ex) {
+            throw new PatientCreationException("Unexpected error occurred while creating patient.", ex);
         }
-        patientEntity.setStatusId(activeStatus.get());
-        // save the patient entity
-        // map the patient entity to the patient DTO
-        // return the patient DTO
-        return patientMapper.toDto(patientRepository.save(patientEntity));
     }
 
 }
