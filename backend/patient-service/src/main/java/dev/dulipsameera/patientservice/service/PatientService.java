@@ -18,4 +18,5 @@ public interface PatientService {
     PatientDto getPatientByUserId(UUID userId);
     void deletePatientById(UUID id);
     PatientDto createPatient(PatientDto patientDto);
+    PatientDto updatePatient(UUID id, PatientDto patientDto);
 }

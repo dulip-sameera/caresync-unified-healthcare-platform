@@ -66,4 +66,9 @@ public class PatientController {
     public ResponseEntity<PatientDto> createPatient(@RequestBody PatientDto patientDto) {
         return new ResponseEntity<>(patientService.createPatient(patientDto), HttpStatus.CREATED);
     }
+
+    @PutMapping("/id/{id}")
+    public ResponseEntity<PatientDto> updatePatientById(@PathVariable UUID id, @RequestBody PatientDto patientDto) {
+        return new ResponseEntity<>(patientService.updatePatient(id, patientDto), HttpStatus.OK);
+    }
 }

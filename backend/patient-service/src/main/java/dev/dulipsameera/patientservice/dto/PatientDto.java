@@ -1,8 +1,5 @@
 package dev.dulipsameera.patientservice.dto;
 
-import dev.dulipsameera.patientservice.entity.PatientStatusEntity;
-import dev.dulipsameera.patientservice.entity.embedded.PatientAddress;
-import dev.dulipsameera.patientservice.enums.PatientStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
