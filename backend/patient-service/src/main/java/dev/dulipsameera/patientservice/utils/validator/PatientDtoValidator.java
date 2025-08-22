@@ -41,7 +41,7 @@ public class PatientDtoValidator {
         }
 
         if (!errors.isEmpty()) {
-            throw new PatientDtoValidationException(    errors);
+            throw new PatientDtoValidationException(errors);
         }
     }
 }

@@ -185,7 +185,11 @@ public class PatientServiceImpl implements PatientService {
             // map the patient entity to the patient DTO
             // return the patient DTO
             return patientMapper.toDto(updatedPatient);
-        } catch (PatientDtoValidationException | IllegalArgumentException | PatientNotFoundException ex) {
+        } catch (
+                PatientDtoValidationException |
+                IllegalArgumentException |
+                PatientNotFoundException |
+                PatientStatusNotFoundException ex) {
             throw ex;
         } catch (Exception ex) {
             throw new PatientCreationException("Unexpected error occurred while updating patient.", ex);

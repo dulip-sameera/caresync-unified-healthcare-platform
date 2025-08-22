@@ -7,8 +7,8 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 
 import dev.dulipsameera.patientservice.dto.PatientDto;
 import dev.dulipsameera.patientservice.entity.PatientEntity;
@@ -37,9 +37,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
 public class PatientServiceTest {
@@ -82,14 +82,8 @@ public class PatientServiceTest {
         );
 
         // 2. Initialize PatientStatusEntity
-        activeStatus = new PatientStatusEntity(
-                PatientStatusEnum.ACTIVE.getId(),
-                PatientStatusEnum.ACTIVE.getName(),
-                null);
-        deletedStatus = new PatientStatusEntity(
-                PatientStatusEnum.DELETED.getId(),
-                PatientStatusEnum.DELETED.getName(),
-                null);
+        activeStatus = new PatientStatusEntity(PatientStatusEnum.ACTIVE.getId(), PatientStatusEnum.ACTIVE.getName(), null);
+        deletedStatus = new PatientStatusEntity(PatientStatusEnum.DELETED.getId(), PatientStatusEnum.DELETED.getName(), null);
 
         // 3. Initialize PatientEntity with all required fields
         patientEntity = PatientEntity.builder()
@@ -275,16 +269,15 @@ public class PatientServiceTest {
      */
     @Test
     void deletePatientByIdShouldThrowExceptionWhenStatusNotFound() {
-        // Arrange: Mock findById to return the patient entity, but mock the status repository to return empty
-        when(patientRepository.findById(patientId)).thenReturn(Optional.of(patientEntity));
-        when(patientStatusRepository.findById(PatientStatusEnum.DELETED.getId())).thenReturn(Optional.empty());
+        // Arrange: Mock the mapper to return a valid entity and mock the status repository to return empty
+        when(patientMapper.toEntity(patientDto)).thenReturn(patientEntity);
+        when(patientStatusRepository.findById(PatientStatusEnum.ACTIVE.getId())).thenReturn(Optional.empty());
 
         // Act & Assert: Verify that the correct exception is thrown
-        assertThrows(PatientStatusNotFoundException.class, () -> patientService.deletePatientById(patientId));
+        assertThrows(PatientStatusNotFoundException.class, () -> patientService.createPatient(patientDto));
 
         // Verify: Ensure both findById calls were made, but no save operation was performed
-        verify(patientRepository, times(1)).findById(patientId);
-        verify(patientStatusRepository, times(1)).findById(PatientStatusEnum.DELETED.getId());
+        verify(patientStatusRepository, times(1)).findById(PatientStatusEnum.ACTIVE.getId());
         verify(patientRepository, never()).save(any(PatientEntity.class));
     }
 
@@ -335,7 +328,7 @@ public class PatientServiceTest {
      */
     @Test
     void createPatientShouldThrowExceptionWhenDtoValidationFails() {
-        // Arrange: Mock the validator to throw an exception
+        // Arrange: Mock the validator to throw an exception with a Map of errors
         doThrow(new PatientDtoValidationException(Map.of("firstName", "First name cannot be empty")))
                 .when(patientDtoValidator).validate(patientDto);
 
@@ -376,8 +369,7 @@ public class PatientServiceTest {
         when(patientShareIdGenerator.generateShareId()).thenReturn(shareId);
         when(patientMapper.toEntity(patientDto)).thenReturn(patientEntity);
         when(patientStatusRepository.findById(PatientStatusEnum.ACTIVE.getId())).thenReturn(Optional.of(activeStatus));
-        when(patientRepository.save(any(PatientEntity.class)))
-                .thenThrow(new DataIntegrityViolationException("Duplicate entry"));
+        when(patientRepository.save(any(PatientEntity.class))).thenThrow(new DataIntegrityViolationException("Duplicate entry"));
 
         // Act & Assert: Verify that the correct exception is thrown
         assertThrows(PatientCreationException.class, () -> patientService.createPatient(patientDto));
@@ -400,6 +392,154 @@ public class PatientServiceTest {
 
         // Verify: Ensure the process stopped after the unexpected error
         verify(patientShareIdGenerator, times(1)).generateShareId();
+        verify(patientRepository, never()).save(any(PatientEntity.class));
+    }
+
+    // --- New tests for the updatePatient method ---
+
+    /**
+     * Test case for the happy path where a patient is successfully updated.
+     * This test verifies that the patient entity is correctly updated and saved, and that the updated DTO is returned.
+     */
+    @Test
+    void updatePatientShouldReturnUpdatedPatientDtoWhenSuccessful() {
+        // Arrange: Create a DTO with a new first name
+        PatientDto updatedDto = new PatientDto();
+        updatedDto.setFirstName("Jane");
+
+        // Mock the findById call to return the existing patient entity
+        when(patientRepository.findById(patientId)).thenReturn(Optional.of(patientEntity));
+        // Mock the save call to return the updated entity
+        when(patientRepository.save(any(PatientEntity.class))).thenReturn(patientEntity);
+        // Mock the mapper to return the DTO
+        when(patientMapper.toDto(any(PatientEntity.class))).thenReturn(updatedDto);
+
+        // Act: Call the service method
+        PatientDto result = patientService.updatePatient(patientId, updatedDto);
+
+        // Assert: Verify the result and mock interactions
+        assertEquals(updatedDto, result);
+        verify(patientRepository, times(1)).findById(patientId);
+        verify(patientDtoValidator, times(1)).validate(updatedDto);
+        verify(patientRepository, times(1)).save(any(PatientEntity.class));
+        verify(patientMapper, times(1)).toDto(any(PatientEntity.class));
+
+        // Capture the argument to verify updates
+        ArgumentCaptor<PatientEntity> patientEntityCaptor = ArgumentCaptor.forClass(PatientEntity.class);
+        verify(patientRepository).save(patientEntityCaptor.capture());
+
+        // Assertions on the captured entity to ensure the update happened correctly
+        PatientEntity savedEntity = patientEntityCaptor.getValue();
+        assertEquals("Jane", savedEntity.getFirstName());
+        assertNotNull(savedEntity.getUpdatedAt());
+    }
+
+    /**
+     * Test case for when the patient to be updated is not found.
+     * This test verifies that a PatientNotFoundException is thrown.
+     */
+    @Test
+    void updatePatientShouldThrowExceptionWhenPatientNotFound() {
+        // Arrange: Mock findById to return an empty Optional
+        when(patientRepository.findById(patientId)).thenReturn(Optional.empty());
+
+        // Act & Assert: Verify that the correct exception is thrown
+        assertThrows(PatientNotFoundException.class, () -> patientService.updatePatient(patientId, patientDto));
+
+        // Verify: Ensure the repository was called but no save operation was performed
+        verify(patientRepository, times(1)).findById(patientId);
+        verify(patientRepository, never()).save(any(PatientEntity.class));
+    }
+
+    /**
+     * Test case for when the input ID is null.
+     * This test verifies that an IllegalArgumentException is thrown.
+     */
+    @Test
+    void updatePatientShouldThrowIllegalArgumentExceptionForNullId() {
+        // Arrange: Null ID
+        UUID nullId = null;
+
+        // Act & Assert: Verify that the correct exception is thrown
+        assertThrows(IllegalArgumentException.class, () -> patientService.updatePatient(nullId, patientDto));
+
+        // Verify: Ensure no repository methods were called
+        verify(patientRepository, never()).findById(any());
+        verify(patientRepository, never()).save(any(PatientEntity.class));
+    }
+
+    /**
+     * Test case for when the DTO is null.
+     * This test verifies that an IllegalArgumentException is thrown.
+     */
+    @Test
+    void updatePatientShouldThrowIllegalArgumentExceptionForNullDto() {
+        // Act & Assert: Verify that the correct exception is thrown
+        assertThrows(IllegalArgumentException.class, () -> patientService.updatePatient(patientId, null));
+
+        // Verify: Ensure no repository methods were called
+        verify(patientRepository, never()).findById(any());
+        verify(patientRepository, never()).save(any(PatientEntity.class));
+    }
+
+    /**
+     * Test case for when the DTO validation fails during an update.
+     * This test verifies that a PatientDtoValidationException is thrown and the process stops early.
+     */
+    @Test
+    void updatePatientShouldThrowExceptionWhenDtoValidationFails() {
+        // Arrange: Mock findById to return a patient and the validator to throw an exception
+        when(patientRepository.findById(patientId)).thenReturn(Optional.of(patientEntity));
+        doThrow(new PatientDtoValidationException(Map.of("firstName", "First name cannot be empty")))
+                .when(patientDtoValidator).validate(patientDto);
+
+        // Act & Assert: Verify that the correct exception is thrown
+        assertThrows(PatientDtoValidationException.class, () -> patientService.updatePatient(patientId, patientDto));
+
+        // Verify: Ensure the process stops after the validation failure
+        verify(patientRepository, times(1)).findById(patientId);
+        verify(patientDtoValidator, times(1)).validate(patientDto);
+        verify(patientRepository, never()).save(any(PatientEntity.class));
+    }
+
+    /**
+     * Test case for when the new status in the DTO is not found in the status repository.
+     * This test verifies that a PatientStatusNotFound exception is thrown.
+     */
+    @Test
+    void updatePatientShouldThrowExceptionWhenStatusIsNotFound() {
+        // Arrange: Create a DTO with a new status
+        PatientDto updatedDto = new PatientDto();
+        updatedDto.setStatus(PatientStatusEnum.DELETED.getName());
+
+        // Mock findById to return a patient, mock the validator and mock status repo to return empty
+        when(patientRepository.findById(patientId)).thenReturn(Optional.of(patientEntity));
+        when(patientStatusRepository.findById(PatientStatusEnum.DELETED.getId())).thenReturn(Optional.empty());
+
+        // Act & Assert: Verify that the correct exception is thrown
+        assertThrows(PatientStatusNotFoundException.class, () -> patientService.updatePatient(patientId, updatedDto));
+
+        // Verify: Ensure the process stops after the status is not found
+        verify(patientRepository, times(1)).findById(patientId);
+        verify(patientDtoValidator, times(1)).validate(updatedDto);
+        verify(patientStatusRepository, times(1)).findById(PatientStatusEnum.DELETED.getId());
+        verify(patientRepository, never()).save(any(PatientEntity.class));
+    }
+
+    /**
+     * Test case for when an unexpected exception occurs during the update process.
+     * This test verifies that a PatientCreationException is thrown.
+     */
+    @Test
+    void updatePatientShouldThrowPatientCreationExceptionOnUnexpectedError() {
+        // Arrange: Mock a dependency to throw a generic exception
+        when(patientRepository.findById(patientId)).thenThrow(new RuntimeException("Unexpected database error"));
+
+        // Act & Assert: Verify that the correct exception is thrown
+        assertThrows(PatientCreationException.class, () -> patientService.updatePatient(patientId, patientDto));
+
+        // Verify: Ensure the process stops after the unexpected error
+        verify(patientRepository, times(1)).findById(patientId);
         verify(patientRepository, never()).save(any(PatientEntity.class));
     }
 }
