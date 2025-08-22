@@ -51,6 +51,11 @@ public class PatientController {
         return new ResponseEntity<>(patientService.getPatientByEmail(email), HttpStatus.OK);
     }
 
+    @GetMapping("/userId/{userId}")
+    public ResponseEntity<PatientDto> getPatientByUserId(@PathVariable UUID userId){
+        return new ResponseEntity<>(patientService.getPatientByUserId(userId), HttpStatus.OK);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePatientById(@PathVariable UUID id) {
         patientService.deletePatientById(id);

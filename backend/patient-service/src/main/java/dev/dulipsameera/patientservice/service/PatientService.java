@@ -15,6 +15,7 @@ public interface PatientService {
     PatientDto getPatientByContact(String contact);
     PatientDto getPatientByNic(String nic);
     PatientDto getPatientByEmail(String email);
+    PatientDto getPatientByUserId(UUID userId);
     void deletePatientById(UUID id);
     PatientDto createPatient(PatientDto patientDto);
 }

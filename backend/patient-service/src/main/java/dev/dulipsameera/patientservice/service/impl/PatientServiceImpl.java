@@ -95,6 +95,14 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
+    public PatientDto getPatientByUserId(UUID userId) {
+        PatientEntity patientEntity = patientRepository
+                .findByUserId(userId)
+                .orElseThrow(() -> new PatientNotFoundException("Patient with userId " + userId + " not found."));
+        return patientMapper.toDto(patientEntity);
+    }
+
+    @Override
     @Transactional
     public void deletePatientById(UUID id) {
         // check if the id is null
