@@ -7,7 +7,7 @@ import dev.dulipsameera.patientservice.enums.PatientStatusEnum;
 import dev.dulipsameera.patientservice.exception.custom.PatientCreationException;
 import dev.dulipsameera.patientservice.exception.custom.PatientDtoValidationException;
 import dev.dulipsameera.patientservice.exception.custom.PatientNotFoundException;
-import dev.dulipsameera.patientservice.exception.custom.PatientStatusNotFound;
+import dev.dulipsameera.patientservice.exception.custom.PatientStatusNotFoundException;
 import dev.dulipsameera.patientservice.repository.PatientRepository;
 import dev.dulipsameera.patientservice.repository.PatientStatusRepository;
 import dev.dulipsameera.patientservice.service.PatientService;
@@ -114,7 +114,7 @@ public class PatientServiceImpl implements PatientService {
         Optional<PatientStatusEntity> patientStatusEntity = patientStatusRepository
                 .findById(PatientStatusEnum.DELETED.getId());
         if (patientStatusEntity.isEmpty()) {
-            throw new PatientStatusNotFound("Patient status with ID " + PatientStatusEnum.DELETED.getId() + " not found.");
+            throw new PatientStatusNotFoundException("Patient status with ID " + PatientStatusEnum.DELETED.getId() + " not found.");
         }
         patientEntity.setStatusId(patientStatusEntity.get());
         patientRepository.save(patientEntity);
@@ -134,14 +134,17 @@ public class PatientServiceImpl implements PatientService {
             patientEntity.setCreatedAt(LocalDateTime.now());
             Optional<PatientStatusEntity> activeStatus = patientStatusRepository.findById(PatientStatusEnum.ACTIVE.getId());
             if (activeStatus.isEmpty()) {
-                throw new PatientStatusNotFound("Patient status with ID " + PatientStatusEnum.ACTIVE.getId() + " not found.");
+                System.out.println("Hello");
+                throw new PatientStatusNotFoundException("Patient status with ID " + PatientStatusEnum.ACTIVE.getId() + " not found.");
             }
             patientEntity.setStatusId(activeStatus.get());
             // save the patient entity
             // map the patient entity to the patient DTO
             // return the patient DTO
             return patientMapper.toDto(patientRepository.save(patientEntity));
-        } catch (PatientDtoValidationException | PatientStatusNotFound ex) {
+        } catch (PatientDtoValidationException ex) {
+            throw ex;
+        } catch (PatientStatusNotFoundException ex) {
             throw ex;
         } catch (DataIntegrityViolationException ex) {
             throw new PatientCreationException("Duplicate or invalid patient data: " + ex.getMostSpecificCause().getMessage(), ex);

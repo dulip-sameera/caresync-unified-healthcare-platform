@@ -3,7 +3,7 @@ package dev.dulipsameera.patientservice.exception;
 import dev.dulipsameera.patientservice.exception.custom.PatientCreationException;
 import dev.dulipsameera.patientservice.exception.custom.PatientDtoValidationException;
 import dev.dulipsameera.patientservice.exception.custom.PatientNotFoundException;
-import dev.dulipsameera.patientservice.exception.custom.PatientStatusNotFound;
+import dev.dulipsameera.patientservice.exception.custom.PatientStatusNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
-    @ExceptionHandler(PatientStatusNotFound.class)
+    @ExceptionHandler(PatientStatusNotFoundException.class)
     public ProblemDetail handlePatientStatusNotFoundException(PatientNotFoundException exception) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
         problemDetail.setTitle("Patient Status Not Found");
